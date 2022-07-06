@@ -28,16 +28,16 @@ pipeline {
 			
                 sh '''
                 pwd
-		ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
-		" aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
+		ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
+		" aws ecr get-login-password --region us-east-1 |  docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
                 
-		ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
+		ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
                 " docker rm app --force 2> /dev/null"
                
-                ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
+                ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
                 " docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
                 
-                ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
+                ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
                 " docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
                 '''
             }
