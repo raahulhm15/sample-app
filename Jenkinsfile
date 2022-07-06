@@ -14,10 +14,10 @@ pipeline {
 		// It then build the image from Dockerfile from "Checkout" stage.
 		// After that a tag for ECR is created and then pushed to the repo.
 		    
-                sh "sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
-                sh "sudo docker build -t sample-app:latest ."
-                sh "sudo docker tag sample-app:latest ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
-                sh "sudo docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                sh " aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
+                sh " docker build -t sample-app:latest ."
+                sh " docker tag sample-app:latest ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                sh " docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
             }
         }
         stage('deploy to app host') {
@@ -29,16 +29,16 @@ pipeline {
                 sh '''
                 pwd
 		ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
-		"sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
+		" aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
                 
 		ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
-                "sudo docker rm app --force 2> /dev/null"
+                " docker rm app --force 2> /dev/null"
                
                 ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
-                "sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
+                " docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
                 
                 ssh root@app -i /var/lib/jenkins/.ssh/id_rsa_jenkins -o StrictHostKeyChecking=no \
-                "sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                " docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
                 '''
             }
 
