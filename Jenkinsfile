@@ -28,17 +28,17 @@ pipeline {
 			
                 sh '''
                 pwd
-		ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
-		" aws ecr get-login-password --region us-east-1 |  docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
+		ssh root@ip-10-0-2-84 -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+		" sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
                 
-		ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
-                " docker rm app --force 2> /dev/null"
+		ssh root@ip-10-0-2-84 -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+                " sudo docker rm app --force 2> /dev/null"
                
-                ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
-                " docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
+                ssh root@ip-10-0-2-84 -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+                " sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
                 
-                ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.2.84 \
-                " docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                ssh root@ip-10-0-2-84 -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+                " sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
                 '''
             }
 
