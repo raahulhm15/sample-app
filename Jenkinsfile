@@ -28,16 +28,16 @@ pipeline {
 			
                 sh '''
                 pwd
-		ssh root@app -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+		ssh root@app -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no \
 		" sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
                 
-		ssh root@app -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+		ssh root@app -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no \
                 " sudo docker rm app --force 2> /dev/null"
                
-                ssh root@app -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+                ssh root@app -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no \
                 " sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
                 
-                ssh root@app -i /home/ubuntu/.ssh/id_rsa.pub -o StrictHostKeyChecking=no \
+                ssh root@app -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no \
                 " sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
                 '''
             }
