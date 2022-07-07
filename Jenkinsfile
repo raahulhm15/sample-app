@@ -27,10 +27,10 @@ pipeline {
      steps{
          script {
              sshagent(credentials : ['aws_ec2']){
-                sh 'ssh -o StrictHostKeyChecking=no -i sshkey.pem ubuntu@10.0.1.87'
+                sh 'ssh -o StrictHostKeyChecking=no -i sshkey.pem ubuntu@ip-10-0-2-53'
 
              }
-                //sh 'ssh -i /login/-i sshkey.pem ubuntu@10.0.2.84'
+                //sh 'ssh -i /login/-i sshkey.pem ubuntu@ip-10-0-2-53'
                 sh 'docker run -d -p 8081:8080  node 334982178958.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest'
             }
        }
