@@ -23,7 +23,7 @@ pipeline {
                 sh " docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
             }
         }
-         stage('Docker Run') {
+     stage('Docker Run') {
      steps{
          script {
              sshagent(credentials : ['aws_ec2']){
@@ -33,5 +33,6 @@ pipeline {
                 //sh 'ssh -i /login/-i assignment-c7key.pem ubuntu@10.0.2.84'
                 sh 'docker run -d -p 8081:8080  node 334982178958.dkr.ecr.us-east-1.amazonaws.com/upgradproject/latest'
             }
+       }
     }
 }
