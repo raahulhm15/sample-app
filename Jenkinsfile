@@ -6,7 +6,8 @@ pipeline {
             steps {
 		// Checkout GIT SCM
                 git branch: 'main',
-                    url: 'https://github.com/syedbilalafzal/sample-app.git'            }
+                    url: 'https://github.com/raahulhm15/sample-app.git'         
+	    }
         }
         stage('Build') {
             steps {
@@ -15,9 +16,9 @@ pipeline {
 		// After that a tag for ECR is created and then pushed to the repo.
 		    
                 sh " aws ecr get-login-password --region us-east-1 |  docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
-                sh " docker build -t sample-app:latest ."
-                sh " docker tag sample-app:latest ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
-                sh " docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                sh " docker build -t finalprojectecr:latest ."
+                sh " docker tag sample-app:latest ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
+                sh " docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
             }
         }
         stage('deploy to app host') {
@@ -35,10 +36,10 @@ pipeline {
                 " sudo docker rm app --force 2> /dev/null"
                
                 ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-                " sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest" 
+                " sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest" 
                 
                 ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-                " sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/sample-app:latest"
+                " sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
                 '''
             }
 
