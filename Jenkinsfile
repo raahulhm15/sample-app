@@ -26,7 +26,7 @@ pipeline {
      stage('Docker Run') {
      steps{
          script {
-             sshagent(credentials : ['aws_ec2']){
+             sshagent(credentials : ['AWS']){
                 sh 'ssh -o StrictHostKeyChecking=no -i sshkey.pem ubuntu@ip-10-0-2-53'
 
              }
