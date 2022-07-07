@@ -21,28 +21,15 @@ pipeline {
                 sh " docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
             }
         }
-        stage('deploy to app host') {
-            steps
-                {
-	        // This section Logins to the ECR repository from APP Instance. It check if container is running then closes and removes it to spin up a new one.
-		// The below script spins up the container if it is not running
-			
-                sh '''
-                pwd
-		ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-		" sudo aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
-                
-		ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-                " sudo docker rm app --force 2> /dev/null"
-               
-                ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-                " sudo docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest" 
-                
-                ssh root@ip-10-0-1-117 -i assignment-c7key.pem -o StrictHostKeyChecking=no \
-                " sudo docker run --name app -d -p 8080:8081 ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
-                '''
-            }
+         stage('Docker Run') {
+     steps{
+         script {
+             sshagent(credentials : ['aws_ec2']){
+                sh 'ssh -o StrictHostKeyChecking=no -i assignment-c7key.pem ubuntu@10.0.1.87'
 
-        }        
+             }
+                //sh 'ssh -i /login/-i assignment-c7key.pem ubuntu@10.0.2.84'
+                sh 'docker run -d -p 8081:8080  node 334982178958.dkr.ecr.us-east-1.amazonaws.com/upgradproject/latest'
+            }
     }
 }
