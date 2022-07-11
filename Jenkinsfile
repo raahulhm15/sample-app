@@ -17,10 +17,10 @@ pipeline {
 		// It then build the image from Dockerfile from "Checkout" stage.
 		// After that a tag for ECR is created and then pushed to the repo.
 		    
-                sh " aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com"
-                sh " sudo docker build -t finalprojectecr:latest ."
-                sh " sudo docker tag finalprojectecr:latest ${awsid}.dkr.ecr.us-east-1c.amazonaws.com/finalprojectecr:latest"
-                sh " sudo docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
+                sh ' aws ecr get-login-password --region us-east-1 |  docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com'
+                sh '  docker build -t finalprojectecr:latest .'
+                sh '  docker tag finalprojectecr:latest ${awsid}.dkr.ecr.us-east-1c.amazonaws.com/finalprojectecr:latest'
+                sh '  docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest'
             }
         }
      stage('Docker Run') {
