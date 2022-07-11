@@ -2,38 +2,48 @@
 
 pipeline {
     agent any
-
+    environment {
+        registry = "${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment"
+    }
+    
     stages {
-        stage('Checkout') {
+        stage('Cloning Git') {
             steps {
-		// Checkout GIT SCM
-                git branch: 'main',
-                    url: 'https://github.com/raahulhm15/sample-app.git'         
-	    }
-        }
-        stage('Build') {
-            steps {
-		// The below scripts login to the ECR Repo from Jenkins EC2
-		// It then build the image from Dockerfile from "Checkout" stage.
-		// After that a tag for ECR is created and then pushed to the repo.
-		    
-                sh ' aws ecr get-login-password --region us-east-1 |  docker login --username AWS --password-stdin ${awsid}.dkr.ecr.us-east-1.amazonaws.com'
-                sh '  docker build -t finalprojectecr:latest .'
-                sh '  docker tag finalprojectecr:latest ${awsid}.dkr.ecr.us-east-1c.amazonaws.com/finalprojectecr:latest'
-                sh '  docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest'
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/mbibekjana/jenkins_assignment.git']]])
             }
         }
-     stage('Docker Run') {
+    // Building Docker images
+    stage('Building image') {
+      steps{
+        script {
+          def dockerHome = tool 'docker'
+          env.PATH = "${dockerHome}/bin:${env.PATH}"
+          dockerImage = docker.build registry
+        }
+      }
+    }
+
+    // Uploading Docker images into AWS ECR
+    stage('Pushing to ECR') {
+        steps{
+            script {
+                sh 'docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment '
+                sh 'docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment'
+            }
+        }
+    }
+
+    stage('Docker Deploy') {
      steps{
          script {
-             sshagent(credentials : ['AWS']){
-                sh 'ssh -o StrictHostKeyChecking=no -i sshkey.pem ubuntu@ip-10-0-2-53'
+             sshagent(credentials : ['upgrad']){
+                sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.121 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment && docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8081:8081 --rm --name node ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment"'
 
              }
-                //sh 'ssh -i /login/-i sshkey.pem ubuntu@ip-10-0-2-53'
-                sh 'docker run -d -p 8081:8080  node 334982178958.dkr.ecr.us-east-1c.amazonaws.com/finalprojectecr:latest'
+                
+                
             }
-       }
+      }
     }
-}
+    }
 }
