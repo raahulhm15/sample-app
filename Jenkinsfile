@@ -3,13 +3,13 @@
 pipeline {
     agent any
     environment {
-        registry = "${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment"
+        registry = "${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"
     }
     
     stages {
         stage('Cloning Git') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/mbibekjana/jenkins_assignment.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/raahulhm15/sample-app.git']]])
             }
         }
     // Building Docker images
@@ -27,8 +27,8 @@ pipeline {
     stage('Pushing to ECR') {
         steps{
             script {
-                sh 'docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment '
-                sh 'docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment'
+                sh 'docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest '
+                sh 'docker push ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest'
             }
         }
     }
@@ -37,7 +37,7 @@ pipeline {
      steps{
          script {
              sshagent(credentials : ['upgrad']){
-                sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.121 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment && docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8081:8081 --rm --name node ${awsid}.dkr.ecr.us-east-1.amazonaws.com/assignment"'
+                sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.121 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8081:8081 --rm --name node ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"'
 
              }
                 
