@@ -36,7 +36,7 @@ pipeline {
      steps{
          script {
              sshagent(credentials : ['upgrad']){
-                sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.121 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8081:8081 --rm --name node ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"'
+                sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.230 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && docker pull ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8081:8081 --rm --name node ${awsid}.dkr.ecr.us-east-1.amazonaws.com/finalprojectecr:latest"'
 
              }
                 
